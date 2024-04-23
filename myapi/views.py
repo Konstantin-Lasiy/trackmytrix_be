@@ -1,47 +1,89 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status, permissions
 from rest_framework.response import Response
-from .models import DailyWeight
-from .serializers import WeightEntrySerializer
+from .models import TrickInstance, Run
+from django.http import JsonResponse
+from django.utils import timezone
 
-@api_view(['GET'])
-def hello_world(request):   
-    return Response({'message': 'Greetings from your backend (   )(   ) !'})
 
-@api_view(['GET', 'POST'])
+@api_view(["GET"])
+def hello_world(request):
+    return Response({"message": "Greetings from your backend (   )(   ) !"})
+
+
+@api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
-def weight_entries(request):
-    if request.method == 'GET':
-        entries = DailyWeight.objects.filter(user=request.user)
-        serializer = WeightEntrySerializer(entries, many=True)
-        return Response(serializer.data)
+def upload_tricks(request):
+    import json
 
-    elif request.method == 'POST':
-        serializer = WeightEntrySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)  # Set the user to the current user
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([permissions.IsAuthenticated])
-def weight_entry_detail(request, pk) -> Response | None:
     try:
-        entry = DailyWeight.objects.get(pk=pk, user=request.user)
-    except DailyWeight.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        data = request.data  # Load data from request body
+        run = Run.objects.create(
+            user=request.user,
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            wing=data.get("wing", None),
+            site=data.get("site", None),
+        )
+        tricks_data = data["filteredTricks"]
+        for trick_data in tricks_data:
+            # Create or update the Trick instance
+            TrickInstance.objects.update_or_create(
+                run=run,
+                user=request.user,
+                name=trick_data["name"],
+                successful=trick_data.get("successful", True),
+                right=trick_data.get("right", False),
+                reverse=trick_data.get("reverse", False),
+                twisted=trick_data.get("twisted", False),
+                twisted_exit=trick_data.get("twisted_exit", False),
+                flipped=trick_data.get("flipped", False),
+                double_flipped=trick_data.get("double_flipped", False),
+                devil_twist=trick_data.get("devil_twist", False),
+                cab_slide=trick_data.get("cab_slide", False),
+            )
 
-    if request.method == 'GET':
-        serializer = WeightEntrySerializer(entry)
-        return Response(serializer.data)
+        return JsonResponse(
+            {"status": "success", "message": "Tricks uploaded successfully"}, status=200
+        )
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
-    elif request.method == 'PUT':
-        serializer = WeightEntrySerializer(entry, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
-        entry.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+# @api_view(['GET', 'POST'])
+# @permission_classes([permissions.IsAuthenticated])
+# def weight_entries(request):
+#     if request.method == 'GET':
+#         entries = DailyWeight.objects.filter(user=request.user)
+#         serializer = WeightEntrySerializer(entries, many=True)
+#         return Response(serializer.data)
+
+#     elif request.method == 'POST':
+#         serializer = WeightEntrySerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save(user=request.user)  # Set the user to the current user
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# @api_view(['GET', 'PUT', 'DELETE'])
+# @permission_classes([permissions.IsAuthenticated])
+# def weight_entry_detail(request, pk) -> Response | None:
+#     try:
+#         entry = DailyWeight.objects.get(pk=pk, user=request.user)
+#     except DailyWeight.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+
+#     if request.method == 'GET':
+#         serializer = WeightEntrySerializer(entry)
+#         return Response(serializer.data)
+
+#     elif request.method == 'PUT':
+#         serializer = WeightEntrySerializer(entry, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     elif request.method == 'DELETE':
+#         entry.delete()
+# return Response(status=status.HTTP_204_NO_CONTENT)

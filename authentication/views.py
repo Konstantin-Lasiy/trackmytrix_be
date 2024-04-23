@@ -10,7 +10,7 @@ def get_user_tokens(user):
     refresh = tokens.RefreshToken.for_user(user)
     return {
         "refresh_token": str(refresh),
-        "access_token": str(refresh.access_token)
+        "access_token": str(refresh.access_token) # type: ignore
     }
 
 
@@ -20,8 +20,8 @@ def loginView(request):
     serializer = serializers.LoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    email = serializer.validated_data["email"]
-    password = serializer.validated_data["password"]
+    email = serializer.validated_data["email"] # type: ignore
+    password = serializer.validated_data["password"] # type: ignore
 
     user = authenticate(email=email, password=password)
 
@@ -80,7 +80,7 @@ def logoutView(request):
         res.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
         res.delete_cookie("X-CSRFToken")
         res.delete_cookie("csrftoken")
-        res["X-CSRFToken"]=None
+        res["X-CSRFToken"]=None # type: ignore
         
         return res
     except:

@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from django.conf import settings
-from .models import Account  # Adjust the import path according to your project structure
+from .models import Account, AccountManager  # Adjust the import path according to your project structure
 from django.contrib.auth import get_user_model
 
 
@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 class LoginViewTestCase(TestCase):
     def setUp(self):
         # Create a custom user for authentication using your Account model
-        self.user = Account.objects.create_user(email='test@example.com', username='testuser', password='password123')
+        self.user = Account.objects.create_user(email='test@example.com', username='testuser', password='password123') # type: ignore
         self.client = APIClient()
 
     def test_successful_login(self):
@@ -56,7 +56,7 @@ class RegisterViewTestCase(TestCase):
         
         # Check that the response indicates success
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, "Registered!")
+        self.assertEqual(response.data, "Registered!") # type: ignore
         
         # Verify the user was created in the database
         self.assertTrue(User.objects.filter(email='newuser@example.com').exists())
@@ -73,8 +73,8 @@ class RegisterViewTestCase(TestCase):
         
         # Assuming your serializer and view properly validate data and return a 400 Bad Request for invalid data
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(first=response.data['username'][0].code, second='blank')
-        self.assertEqual(first=response.data['password'][0].code, second='password_too_short')
-        self.assertEqual(first=response.data['email'][0].code, second='invalid')
+        self.assertEqual(first=response.data['username'][0].code, second='blank') # type: ignore
+        self.assertEqual(first=response.data['password'][0].code, second='password_too_short') # type: ignore
+        self.assertEqual(first=response.data['email'][0].code, second='invalid') # type: ignore
 
 
