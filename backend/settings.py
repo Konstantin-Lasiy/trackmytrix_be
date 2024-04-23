@@ -23,19 +23,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 
-
-
 # SECURITY WARNING: keep the secret key used in production secret!
 
 IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
 if not IS_HEROKU_APP:
     from dotenv import load_dotenv
+
     load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if not IS_HEROKU_APP:
-    DEBUG = True
+    DEBUG = False
 
 if IS_HEROKU_APP:
     ALLOWED_HOSTS = ["*"]
@@ -51,25 +50,24 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'django.contrib.sites',
+    "django.contrib.sites",
     # 'allauth',
     # 'allauth.account',
     # 'allauth.socialaccount',
     # "dj_rest_auth",
     "rest_framework",
     # "rest_framework.authtoken",
-    "rest_framework_simplejwt.token_blacklist",    
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "myapi",
     "authentication",
-    
 ]
 
 
 # JWT token settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),  # Example: Access token lifetime
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Example: Refresh token lifetime
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),  # Example: Access token lifetime
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),  # Example: Refresh token lifetime
     # Add other SIMPLE_JWT settings as needed
 }
 
@@ -77,7 +75,7 @@ SIMPLE_JWT = {
 SITE_ID = 1
 
 # Configure allauth to not require email verification
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
 
 REST_USE_JWT = True
@@ -90,11 +88,11 @@ REST_USE_JWT = True
 # )
 
 
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -102,6 +100,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # 'allauth.account.middleware.AccountMiddleware',
 ]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # if IS_HEROKU_APP:
 #     LOGGING = {
@@ -140,10 +140,16 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
-CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://localhost:4173',
-                         'https://weight-analyzer.netlify.app', 'http://localhost:5173']  
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://localhost:4173',
-                         'https://weight-analyzer.netlify.app', 'http://localhost:5173']
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:4173",
+    "http://localhost:5173",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:4173",
+    "http://localhost:5173",
+]
 CSRF_COOKIE_HTTP_ONLY = True
 CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = True
@@ -152,56 +158,49 @@ SESSION_COOKIE_SECURE = True
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': False,
-    'UPDATE_LAST_LOGIN': False,
-
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-    'JWK_URL': None,
-    'LEEWAY': 0,
-
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
-
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
-
-    'JTI_CLAIM': 'jti',
-
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
     # custom
-    'AUTH_COOKIE': 'access', # Cookie name. Enables cookies if value is set.
-    'AUTH_COOKIE_REFRESH': 'refresh', # A string like "example.com", or None for standard domain cookie.
-    'AUTH_COOKIE_DOMAIN': None, # Whether the auth cookies should be secure (https:// only).
-    'AUTH_COOKIE_SECURE': True, # Http only cookie flag.It's not fetch by javascript.
-    'AUTH_COOKIE_HTTP_ONLY': True,
-    'AUTH_COOKIE_PATH': '/',        # The path of the auth cookie.
+    "AUTH_COOKIE": "access",  # Cookie name. Enables cookies if value is set.
+    "AUTH_COOKIE_REFRESH": "refresh",  # A string like "example.com", or None for standard domain cookie.
+    "AUTH_COOKIE_DOMAIN": None,  # Whether the auth cookies should be secure (https:// only).
+    "AUTH_COOKIE_SECURE": True,  # Http only cookie flag.It's not fetch by javascript.
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_PATH": "/",  # The path of the auth cookie.
     # Whether to set the flag restricting cookie leaks on cross-site requests. This can be 'Lax', 'Strict', or None to disable the flag.
-    'AUTH_COOKIE_SAMESITE': "None", # TODO: Modify to Lax
+    "AUTH_COOKIE_SAMESITE": "None",  # TODO: Modify to Lax
 }
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         # 'rest_framework_simplejwt.authentication.JWTAuthentication', # TODO: For now
-        'authentication.authenticate.CustomAuthentication',
+        "authentication.authenticate.CustomAuthentication",
     ],
-
     "DEFAULT_PERMISSION_CLASSES": [
-        'rest_framework.permissions.AllowAny',
-    ]
+        "rest_framework.permissions.AllowAny",
+    ],
 }
 
 ROOT_URLCONF = "backend.urls"
@@ -248,7 +247,7 @@ else:
         }
     }
 
-AUTH_USER_MODEL = 'authentication.Account'
+AUTH_USER_MODEL = "authentication.Account"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
