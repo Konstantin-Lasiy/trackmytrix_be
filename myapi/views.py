@@ -32,9 +32,10 @@ def upload_run(request):
             site=data.get("site", None),
         )
         tricks_data = data["filteredTricks"]
+        print(tricks_data)
         for trick_data in tricks_data:
             # Create or update the Trick instance
-            TrickInstance.objects.update_or_create(
+            TrickInstance.objects.create(
                 run=run,
                 trick_definition_id=trick_data["id"],
                 successful=trick_data.get("successful"),
