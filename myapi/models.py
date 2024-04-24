@@ -27,6 +27,9 @@ class TrickDefinition(models.Model):
     twisted_exit_bonus = models.DecimalField(
         max_digits=5, decimal_places=2, default=Decimal("0.00")
     )
+    full_twisted_bonus = models.DecimalField(
+        max_digits=5, decimal_places=2, default=Decimal("0.00")
+    )
     flipped_bonus = models.DecimalField(
         max_digits=5, decimal_places=2, default=Decimal("0.00")
     )
@@ -37,6 +40,12 @@ class TrickDefinition(models.Model):
         max_digits=5, decimal_places=2, default=Decimal("0.00")
     )
     cab_slide_bonus = models.DecimalField(
+        max_digits=5, decimal_places=2, default=Decimal("0.00")
+    )
+    hardcore_enty_bonus = models.DecimalField(
+        max_digits=5, decimal_places=2, default=Decimal("0.00")
+    )
+    devil_twist_stall_bonus = models.DecimalField(
         max_digits=5, decimal_places=2, default=Decimal("0.00")
     )
     restrictions = models.ManyToManyField(Restriction, blank=True, default=None)
