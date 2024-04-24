@@ -1,7 +1,8 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status, permissions
 from rest_framework.response import Response
-from .models import TrickInstance, Run
+from .models import TrickInstance, Run, TrickDefinition
+from .serializers import TrickDefinitionSerializer
 from django.http import JsonResponse
 from django.utils import timezone
 
@@ -10,12 +11,15 @@ from django.utils import timezone
 def hello_world(request):
     return Response({"message": "Greetings from your backend (   )(   ) !"})
 
+@api_view(['GET'])
+def get_trick_definitions(request):
+    trick_definitions = TrickDefinition.objects.all()
+    serializer = TrickDefinitionSerializer(trick_definitions, many=True)
+    return Response(serializer.data)
 
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
-def upload_tricks(request):
-    import json
-
+def upload_run(request):
     try:
         data = request.data  # Load data from request body
         run = Run.objects.create(
