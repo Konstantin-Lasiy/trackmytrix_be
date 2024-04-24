@@ -11,11 +11,13 @@ from django.utils import timezone
 def hello_world(request):
     return Response({"message": "Greetings from your backend (   )(   ) !"})
 
-@api_view(['GET'])
+
+@api_view(["GET"])
 def get_trick_definitions(request):
     trick_definitions = TrickDefinition.objects.all()
     serializer = TrickDefinitionSerializer(trick_definitions, many=True)
     return Response(serializer.data)
+
 
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
@@ -34,17 +36,16 @@ def upload_run(request):
             # Create or update the Trick instance
             TrickInstance.objects.update_or_create(
                 run=run,
-                user=request.user,
-                name=trick_data["name"],
-                successful=trick_data.get("successful", True),
-                right=trick_data.get("right", False),
-                reverse=trick_data.get("reverse", False),
-                twisted=trick_data.get("twisted", False),
-                twisted_exit=trick_data.get("twisted_exit", False),
-                flipped=trick_data.get("flipped", False),
-                double_flipped=trick_data.get("double_flipped", False),
-                devil_twist=trick_data.get("devil_twist", False),
-                cab_slide=trick_data.get("cab_slide", False),
+                trick_definition_id=trick_data["id"],
+                successful=trick_data.get("successful"),
+                right=trick_data.get("right", None),
+                reverse=trick_data.get("reverse", None),
+                twisted=trick_data.get("twisted", None),
+                twisted_exit=trick_data.get("twisted_exit", None),
+                flipped=trick_data.get("flipped", None),
+                double_flipped=trick_data.get("double_flipped", None),
+                devil_twist=trick_data.get("devil_twist", None),
+                cab_slide=trick_data.get("cab_slide", None),
             )
 
         return JsonResponse(
