@@ -13,10 +13,13 @@ class Restriction(models.Model):
 
 class TrickDefinition(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(default= '', null=True, blank=True)
+    description = models.TextField(default="", null=True, blank=True)
+    technical_coefficient = models.DecimalField(
+        max_digits=5, decimal_places=2, default=Decimal("0.00")
+    )
     has_orientation = models.BooleanField(default=False)
     reverse_bonus = models.DecimalField(
-        max_digits=5, decimal_places=2, default=Decimal("0.00")
+        max_digits=4, decimal_places=2, default=Decimal("0.00")
     )
     twisted_bonus = models.DecimalField(
         max_digits=5, decimal_places=2, default=Decimal("0.00")
