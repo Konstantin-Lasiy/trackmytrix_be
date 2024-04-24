@@ -3,31 +3,6 @@ from .models import Run, TrickInstance, TrickDefinition, Restriction
 from django import forms
 from decimal import Decimal
 
-# class TrickInstanceInline(admin.TabularInline):
-#     model = TrickInstance
-#     extra = 1  # Defines how many blank forms are displayed by default.
-#     fields = [
-#         "name",
-#         "trick_id",
-#         "right",
-#         "reverse",
-#         "successful",
-#         "twisted",
-#         "twisted_exit",
-#         "flipped",
-#         "double_flipped",
-#         "devil_twist",
-#         "cab_slide",
-#     ]
-
-
-# class RunAdmin(admin.ModelAdmin):
-#     list_display = ("date", "time", "wing", "site", "user")  # Customize as needed.
-#     inlines = [TrickInstanceInline]
-
-
-# admin.site.register(Run, RunAdmin)
-
 
 class TrickDefinitionInline(admin.TabularInline):
     model = TrickDefinition
@@ -46,53 +21,6 @@ class TrickDefinitionInline(admin.TabularInline):
     ]
 
 
-admin.site.register(TrickDefinition)
-
-
-# class TrickDefinitionAdmin(admin.ModelAdmin):
-#     inlines = [TrickDefinitionInline]
-
-
-# admin.site.register(TrickDefinition, TrickDefinitionAdmin)
-# class TrickInstanceForm(forms.ModelForm):
-#     class Meta:
-#         model = TrickInstance
-#         fields = "__all__"  # Start with all fields
-
-#     def __init__(self, *args, **kwargs):
-#         super(TrickInstanceForm, self).__init__(*args, **kwargs)
-#         if self.instance:# and self.instance.trick_definition_id:
-#             trick_def = TrickDefinition.objects.get(id=self.instance.trick_definition_id)
-#             # Conditionally display fields based on TrickDefinition
-#             if not trick_def.has_orientation:
-#                 del self.fields['orientation']
-#             if trick_def.reverse_bonus == 0:
-#                 del self.fields['reverse']
-#             # Add more conditions as necessary for each field
-
-# class TrickInstanceAdmin(admin.ModelAdmin):
-#     form = TrickInstanceForm
-#     list_display = [ 'run', 'right', 'reverse', 'twisted']
-
-# admin.site.register(TrickInstance, TrickInstanceAdmin)
-
-# class TrickInstanceInline(admin.TabularInline):
-#     model = TrickInstance
-#     form = TrickInstanceForm
-#     extra = 1
-
-# class RunAdmin(admin.ModelAdmin):
-#     inlines = [TrickInstanceInline]
-#     list_display = ('date', 'time', 'wing', 'site', 'user')
-
-# admin.site.register(Run, RunAdmin)
-
-
-from django import forms
-from django.contrib import admin
-from .models import TrickInstance, TrickDefinition
-
-
 class TrickInstanceForm(forms.ModelForm):
     class Meta:
         model = TrickInstance
@@ -105,11 +33,9 @@ class TrickInstanceInline(admin.TabularInline):
 
     def get_exclude(self, request, obj=None, **kwargs):
         excluded_fields = super().get_exclude(request, obj, **kwargs) or []
-        if obj:  # Check if there is a parent object
-            # Check each TrickInstance related to the obj (Run in this case)
+        if obj:
             for trick_instance in obj.tricks.all():
                 trick_def = trick_instance.trick_definition
-                # Determine which fields to exclude based on the trick definition
                 if not trick_def.has_orientation:
                     excluded_fields.append("orientation")
                 if trick_def.reverse_bonus == Decimal("0.00"):
@@ -128,22 +54,20 @@ class TrickInstanceInline(admin.TabularInline):
                     excluded_fields.append("cab_slide")
         return list(set(excluded_fields))  # Use set to eliminate any duplicates
 
-    # Optionally set the fields manually to control order and inclusion
-    # fields = [
-    #     "trick_definition",
-    #     "right",
-    #     "reverse",
-    #     "twisted",
-    #     "twisted_exit",
-    #     "flipped",
-    #     "double_flipped",
-    #     "devil_twist",
-    #     "cab_slide",
-    #     "successful",
-    # ]
+
+class RunForm(forms.ModelForm):
+    class Meta:
+        model = Run
+        fields = "__all__"  # Include all fields
+
+    def __init__(self, *args, **kwargs):
+        super(RunForm, self).__init__(*args, **kwargs)
+        self.fields["wing"].required = False  # Make 'wing' not required
+        self.fields["site"].required = False  # Make 'site' not required
 
 
 class RunAdmin(admin.ModelAdmin):
+    form = RunForm
     list_display = ("date", "time", "wing", "site", "user")
     inlines = [TrickInstanceInline]
 
