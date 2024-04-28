@@ -73,6 +73,5 @@ class RunAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Run, RunAdmin)
-
-
 admin.site.register(Restriction)
+admin.site.register(TrickDefinition)
