@@ -39,7 +39,13 @@ if not IS_HEROKU_APP:
 if IS_HEROKU_APP:
     ALLOWED_HOSTS = ["*"]
 else:
-    ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost"]
+    ALLOWED_HOSTS = [
+        "0.0.0.0",
+        "127.0.0.1",
+        "localhost",
+        "api.trackmytrix.org",
+        "trackmytrix.org",
+    ]
 
 # Application definition
 
@@ -144,11 +150,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:4173",
     "http://localhost:5173",
+    "api.trackmytrix.org",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:4173",
     "http://localhost:5173",
+    "api.trackmytrix.org",
 ]
 CSRF_COOKIE_HTTP_ONLY = True
 CSRF_COOKIE_SAMESITE = "None"
