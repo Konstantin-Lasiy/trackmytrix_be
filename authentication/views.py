@@ -46,6 +46,7 @@ def loginView(request):
             secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
             httponly=settings.SIMPLE_JWT["AUTH_COOKIE_HTTP_ONLY"],
             samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
+            domain=settings.SIMPLE_JWT["AUTH_COOKIE_DOMAIN"],
         )
 
         res.set_cookie(
@@ -55,6 +56,7 @@ def loginView(request):
             secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
             httponly=settings.SIMPLE_JWT["AUTH_COOKIE_HTTP_ONLY"],
             samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
+            domain=settings.SIMPLE_JWT["AUTH_COOKIE_DOMAIN"],
         )
 
         res.data = tokens
