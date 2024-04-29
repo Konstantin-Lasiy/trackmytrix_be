@@ -150,13 +150,15 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:4173",
     "http://localhost:5173",
-    "api.trackmytrix.org",
+    "https://api.trackmytrix.org",
+    "https://trackmytrix.org",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:4173",
     "http://localhost:5173",
-    "api.trackmytrix.org",
+    "https://api.trackmytrix.org",
+    "https://trackmytrix.org",
 ]
 CSRF_COOKIE_HTTP_ONLY = True
 CSRF_COOKIE_SAMESITE = "None"
