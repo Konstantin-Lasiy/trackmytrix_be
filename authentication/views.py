@@ -30,7 +30,6 @@ SECURE_SSL_REDIRECT = True
 @rest_decorators.api_view(["POST"])
 @rest_decorators.permission_classes([])
 def loginView(request):
-    print(request.data)
     serializer = serializers.LoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
@@ -38,7 +37,7 @@ def loginView(request):
     password = serializer.validated_data["password"]  # type: ignore
 
     user = authenticate(email=email, password=password)
-
+    print(settings.DEBUG)
     if user is not None:
         tokens = get_user_tokens(user)
         res = response.Response()
@@ -46,11 +45,27 @@ def loginView(request):
             key=settings.SIMPLE_JWT["AUTH_COOKIE"],
             value=tokens["access_token"],
             expires=settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
-            secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
-            httponly=settings.SIMPLE_JWT["AUTH_COOKIE_HTTP_ONLY"],
-            samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
-            domain=settings.SIMPLE_JWT["AUTH_COOKIE_DOMAIN"],
+            secure=(
+                False if settings.DEBUG else settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"]
+            ),
+            httponly=(
+                False
+                if settings.DEBUG
+                else settings.SIMPLE_JWT["AUTH_COOKIE_HTTP_ONLY"]
+            ),
+            samesite=(
+                "None"
+                if settings.DEBUG
+                else settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"]
+            ),
+            domain=(
+                None if settings.DEBUG else settings.SIMPLE_JWT["AUTH_COOKIE_DOMAIN"]
+            ),
         )
+        if settings.DEBUG:
+            # Ensure cookies are sent over HTTP in development
+            res.cookies[settings.SIMPLE_JWT["AUTH_COOKIE"]]["secure"] = False
+            res.cookies[settings.SIMPLE_JWT["AUTH_COOKIE"]]["samesite"] = "Lax"
 
         res.set_cookie(
             key=settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"],
@@ -59,7 +74,9 @@ def loginView(request):
             secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
             httponly=settings.SIMPLE_JWT["AUTH_COOKIE_HTTP_ONLY"],
             samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
-            domain=settings.SIMPLE_JWT["AUTH_COOKIE_DOMAIN"],
+            domain=(
+                None if settings.DEBUG else settings.SIMPLE_JWT["AUTH_COOKIE_DOMAIN"]
+            ),
         )
 
         res.data = tokens
