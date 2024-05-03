@@ -27,7 +27,7 @@ class RunList(generics.ListCreateAPIView):
 class RunDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Run.objects.all()
     serializer_class = RunSerializer
-    
+
 @api_view(["GET"])
 def get_trick_definitions(request):
     trick_definitions = TrickDefinition.objects.all()
@@ -69,4 +69,4 @@ def upload_run(request):
             {"status": "success", "message": "Tricks uploaded successfully"}, status=200
         )
     except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=400)
+        return JsonResponse({"status": "error", "run_id":run.pk, "message": str(e)}, status=400)
