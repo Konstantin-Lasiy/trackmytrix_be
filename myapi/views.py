@@ -24,6 +24,10 @@ class RunList(generics.ListCreateAPIView):
     queryset = Run.objects.all()
     serializer_class = RunSerializer
 
+class RunDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Run.objects.all()
+    serializer_class = RunSerializer
+    
 @api_view(["GET"])
 def get_trick_definitions(request):
     trick_definitions = TrickDefinition.objects.all()

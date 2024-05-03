@@ -12,4 +12,5 @@ urlpatterns = [
         name="trick_definitions",
     ),
     path("runs/", views.RunList.as_view(), name="runs"),
+    path("runs/<int:pk>/", views.RunDetail.as_view(), name="run_detail"),
 ]
