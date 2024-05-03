@@ -34,7 +34,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if not IS_HEROKU_APP:
-    DEBUG = False
+    DEBUG = True
 
 if IS_HEROKU_APP:
     ALLOWED_HOSTS = ["*"]
@@ -45,6 +45,7 @@ else:
         "localhost",
         "api.trackmytrix.org",
         "trackmytrix.org",
+        "web.postman.co",
     ]
 
 # Application definition
@@ -152,6 +153,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://api.trackmytrix.org",
     "https://trackmytrix.org",
+    "https://web.postman.co",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
@@ -159,6 +161,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://api.trackmytrix.org",
     "https://trackmytrix.org",
+    "https://web.postman.co",
 ]
 CSRF_COOKIE_HTTP_ONLY = True
 CSRF_COOKIE_SAMESITE = "None"
