@@ -3,6 +3,7 @@ from rest_framework import status, permissions, generics
 from rest_framework.response import Response
 from .models import TrickInstance, Run, TrickDefinition
 from .serializers import TrickDefinitionSerializer, RunSerializer
+from myapi.permissions import IsOwnerOrReadOnly
 from django.http import JsonResponse
 from django.utils import timezone
 
@@ -13,20 +14,36 @@ def hello_world(request):
 
 
 class TrickDefinitionList(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     queryset = TrickDefinition.objects.all()
     serializer_class = TrickDefinitionSerializer
 
+
 class TrickDefinitionDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset=TrickDefinition.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    queryset = TrickDefinition.objects.all()
     serializer_class = TrickDefinitionSerializer
 
+
 class RunList(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the runs
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        return Run.objects.filter(user=user)
+
+    serializer_class = RunSerializer
+
+
+class RunDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsOwnerOrReadOnly]
     queryset = Run.objects.all()
     serializer_class = RunSerializer
 
-class RunDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Run.objects.all()
-    serializer_class = RunSerializer
 
 @api_view(["GET"])
 def get_trick_definitions(request):
@@ -66,7 +83,12 @@ def upload_run(request):
             )
 
         return JsonResponse(
-            {"status": "success", "message": "Tricks uploaded successfully"}, status=200
+            {
+                "status": "success",
+                "run_id": run.pk,
+                "message": "Tricks uploaded successfully",
+            },
+            status=200,
         )
     except Exception as e:
-        return JsonResponse({"status": "error", "run_id":run.pk, "message": str(e)}, status=400)
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
