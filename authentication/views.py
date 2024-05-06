@@ -37,7 +37,6 @@ def loginView(request):
     password = serializer.validated_data["password"]  # type: ignore
 
     user = authenticate(email=email, password=password)
-    print(settings.DEBUG)
     if user is not None:
         tokens = get_user_tokens(user)
         res = response.Response()
@@ -88,7 +87,6 @@ def loginView(request):
 @rest_decorators.api_view(["POST"])
 @rest_decorators.permission_classes([])
 def registerView(request) -> response.Response | rest_exceptions.AuthenticationFailed:
-    print(request.data)
     serializer = serializers.RegistrationSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
