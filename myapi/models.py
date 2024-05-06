@@ -54,6 +54,23 @@ class TrickDefinition(models.Model):
         return self.name
 
 
+class LastUsedTricks(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="last_used_tricks",
+    )
+    trick = models.ForeignKey("TrickDefinition", on_delete=models.CASCADE)
+    last_used = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        # Optional: To ensure each user has only one entry per trick
+        unique_together = ("user", "trick")
+
+    def __str__(self):
+        return f"{self.trick} last used on {self.last_used} by {self.user}"
+
+
 class Run(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="runs"
